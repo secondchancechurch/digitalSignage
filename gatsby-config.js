@@ -1,8 +1,10 @@
+require('dotenv').config()
+
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    title: `Second Chance Church Digital Signage`,
+    description: `Second Chance Church Digital Signage`,
+    author: `@edolyne`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -18,15 +20,37 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
+        name: `scc-digital-signage`,
+        short_name: `SCC Signage`,
         start_url: `/`,
-        background_color: `#663399`,
-        theme_color: `#663399`,
+        background_color: `#C8102E`,
+        theme_color: `#C8102E`,
         display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+        icon: `src/images/SCC-fav.png`, // This path is relative to the root of the site.
       },
     },
+    {
+      resolve: "gatsby-source-graphql",
+      options: {
+        // This type will contain remote schema Query type
+        typeName: "CRAFT",
+        // This is field under which it's accessible
+        fieldName: "craft",
+        // Url to query from
+        url: process.env.APOLLO_ENDPOINT,
+        headers: {
+          // Learn about environment variables: https://gatsby.dev/env-vars
+          Authorization: `Bearer ${process.env.APOLLO_KEY}`,
+        },
+        refetchInterval: 60
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-robots-txt',
+      options: {
+        policy: [{ userAgent: '*', disallow: ['/','*'] }]
+      }
+    }
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
