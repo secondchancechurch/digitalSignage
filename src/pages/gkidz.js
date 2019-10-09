@@ -4,6 +4,7 @@ import { graphql, useStaticQuery } from 'gatsby'
 import Carousel from 'react-img-carousel'
 
 require('react-img-carousel/lib/carousel.css')
+require('../styles/main.css')
 
 const GET_SLIDES = graphql`{
   craft {
