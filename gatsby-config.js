@@ -5,6 +5,7 @@ module.exports = {
     title: `Second Chance Church Digital Signage`,
     description: `Second Chance Church Digital Signage`,
     author: `@edolyne`,
+    siteUrl: `https://signage.mysecondchancechurch.com`
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
