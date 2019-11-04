@@ -7,11 +7,15 @@ require('react-img-carousel/lib/carousel.css')
 require('../styles/main.css')
 
 const GET_SLIDES = graphql`{
-  craft {
-    entries(site: "signage", section: "digitalSignage") {
+  allSanitySignage(
+    filter: {
+      ministry: { eq: "gKidz"}
+    }
+  ) {
+    nodes {
       title
-      ... on CRAFT_digitalSignage_digitalSignage_Entry {
-        podcastImage {
+      image {
+        asset {
           url
         }
       }
@@ -20,7 +24,7 @@ const GET_SLIDES = graphql`{
 }`
 
 const DigitalSignage = () => {
-  const { craft: data } = useStaticQuery(GET_SLIDES)
+  const { allSanitySignage: data } = useStaticQuery(GET_SLIDES)
 
   return (
     <>
@@ -47,7 +51,7 @@ const DigitalSignage = () => {
           }
         }}
       >
-        {data.entries.map((item, i)  => (
+        {data.nodes.map((item, i)  => (
           <div
             key={i}
             style={{
@@ -56,7 +60,7 @@ const DigitalSignage = () => {
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              backgroundImage: `url('${item.podcastImage ? item.podcastImage[0].url : null}')`
+              backgroundImage: `url('${item.image ? item.image.asset.url : null}')`
             }}
           />
         ))}
