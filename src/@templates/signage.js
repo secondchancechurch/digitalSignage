@@ -3,33 +3,19 @@ import Head from 'react-helmet'
 import { graphql, useStaticQuery } from 'gatsby'
 import Carousel from 'react-img-carousel'
 
+
 require('react-img-carousel/lib/carousel.css')
 require('../styles/main.css')
 
-const GET_SLIDES = graphql`{
-  allSanitySignage(
-    filter: {
-      ministry: { eq: "gKidz"}
-    }
-  ) {
-    nodes {
-      title
-      image {
-        asset {
-          url
-        }
-      }
-    }
+const DigitalSignage = (props) => {
+  if (!props.data.allSanitySignage) {
+    return <div />
   }
-}`
-
-const DigitalSignage = () => {
-  const { allSanitySignage: data } = useStaticQuery(GET_SLIDES)
 
   return (
     <>
       <Head>
-        <title>gKidz Signage | Second Chance Church</title>
+        <title>{props.data.ministry.title || ''} Signage | Second Chance Church</title>
       </Head>
       <Carousel
         viewportWidth="100vw"
@@ -51,7 +37,7 @@ const DigitalSignage = () => {
           }
         }}
       >
-        {data.nodes.map((item, i)  => (
+        {props.data.allSanitySignage.nodes.map((item, i)  => (
           <div
             key={i}
             style={{
@@ -68,5 +54,29 @@ const DigitalSignage = () => {
     </>
   )
 }
+
+export const pageQuery = graphql`
+  query GetContent($id: String!, $now: Date) {
+    ministry: sanityMinistries(_id: { eq: $id }) {
+      title
+    }
+    allSanitySignage(
+      filter: {
+        ministry: { _id: { eq: $id }},
+        startDate: { lte: $now },
+        endDate: { gte: $now }
+      },
+      sort: { fields: _createdAt, order: ASC}
+    ) {
+      nodes {
+        title
+        image {
+          asset {
+            url
+          }
+        }
+      }
+    }
+  }`
 
 export default DigitalSignage
