@@ -1,21 +1,22 @@
 import React from "react"
 import Head from 'react-helmet'
-import { graphql, useStaticQuery } from 'gatsby'
+import { graphql } from 'gatsby'
 import Carousel from 'react-img-carousel'
-
 
 require('react-img-carousel/lib/carousel.css')
 require('../styles/main.css')
 
 const DigitalSignage = (props) => {
-  if (!props.data.allSanitySignage) {
+  if (!props.data.craft) {
     return <div />
   }
+
+  console.log(props)
 
   return (
     <>
       <Head>
-        <title>{props.data.ministry.title || ''} Signage | Second Chance Church</title>
+        <title>{props.pageContext.title || ''} Signage | Second Chance Church</title>
       </Head>
       <Carousel
         viewportWidth="100vw"
@@ -37,7 +38,7 @@ const DigitalSignage = (props) => {
           }
         }}
       >
-        {props.data.allSanitySignage.nodes.map((item, i)  => (
+        {props.data.craft.entries.map((item, i)  => (
           <div
             key={i}
             style={{
@@ -46,7 +47,7 @@ const DigitalSignage = (props) => {
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              backgroundImage: `url('${item.image ? item.image.asset.url : null}')`
+              backgroundImage: `url('${item.podcastImage ? item.podcastImage[0].url : null}')`
             }}
           />
         ))}
@@ -56,23 +57,13 @@ const DigitalSignage = (props) => {
 }
 
 export const pageQuery = graphql`
-  query GetContent($id: String!, $now: Date) {
-    ministry: sanityMinistries(_id: { eq: $id }) {
-      title
-    }
-    allSanitySignage(
-      filter: {
-        ministry: { _id: { eq: $id }},
-        startDate: { lte: $now },
-        endDate: { gte: $now }
-      },
-      sort: { fields: _createdAt, order: ASC}
-    ) {
-      nodes {
+  query GetContent($id: [CRAFT_QueryArgument]) {
+    craft {
+      entries(site: "signage", section: "digitalSignage", ministry: $id) {
         title
-        image {
-          asset {
-            url
+        ... on CRAFT_digitalSignage_digitalSignage_Entry {
+          podcastImage {
+            url(width: 3048, immediately: true)
           }
         }
       }

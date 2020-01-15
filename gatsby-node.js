@@ -19,25 +19,45 @@ const ministryQueries = `*[_type == "ministries"] {
   title
 }`
 
+const wrapper = promise =>
+  promise.then(result => {
+    if (result.errors) {
+      throw result.errors
+    }
+    return result
+  })
+
 // You can delete this file if you're not using it
-exports.createPages = async ({ actions }) => {
+exports.createPages = async ({ graphql, actions }) => {
   // **Note:** The graphql function call returns a Promise
   // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise for more info
   const { createPage } = actions
 
   const pageTemplate = path.resolve(`src/@templates/signage.js`)
-  const result = await client.fetch(ministryQueries)
+  // const result = await client.fetch(ministryQueries)
+  const result = await wrapper(
+    graphql(`
+      {
+        craft {
+          categories {
+            title
+            id
+            slug
+          }
+        }
+      }
+    `)
+  )
   // Query for recipe nodes to use in creating pages.
 
   return (
     // Create pages for each ministry
-    result.forEach(node => {
+    result.data.craft.categories.forEach(node => {
       createPage({
         path: `/${node.slug}`,
         component: pageTemplate,
         context: {
-          id: node._id,
-          now: moment().format('YYYY-MM-DD'),
+          id: [node.id],
           title: node.title
         },
       })
